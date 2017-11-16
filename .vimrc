@@ -17,7 +17,7 @@ runtime! debian.vim
 " Vim5 and later versions support syntax highlighting. Uncommenting the next
 " line enables syntax highlighting by default.
 " if has("syntax")
-  syntax on
+syntax on
 " endif
 
 " If using a dark background within the editing area and syntax highlighting
@@ -38,26 +38,24 @@ endif
 
 " The following are commented out as they cause vim to behave a lot
 " differently from regular Vi. They are highly recommended though.
-set showcmd		" Show (partial) command in status line.
-set showmatch		" Show matching brackets.
-set ignorecase		" Do case insensitive matching
-set smartcase		" Do smart case matching
-set incsearch		" Incremental search
-set autowrite		" Automatically save before commands like :next and :make
-set hidden		" Hide buffers when they are abandoned
-set mouse=a		" Enable mouse usage (all modes)
+set showcmd     " Show (partial) command in status line.
+set showmatch       " Show matching brackets.
+set ignorecase      " Do case insensitive matching
+set smartcase       " Do smart case matching
+set incsearch       " Incremental search
+set autowrite       " Automatically save before commands like :next and :make
+set hidden      " Hide buffers when they are abandoned
+set mouse=a     " Enable mouse usage (all modes)
 
-" Auto indentation on read/write
-filetype indent on
+" Auto indentation on save
 set smartindent
-autocmd BufRead,BufWritePre *.sh normal gg=G
+augroup autoindent
+  au!
+  autocmd BufWritePre * :normal migg=G`i
+augroup End
 
 " Set swap file directory
 set directory^=$HOME/.vim/temp//
-
-" Window splitting config
-set splitbelow
-set splitright
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
@@ -68,6 +66,9 @@ endif
 set number
 set ruler
 
+set splitbelow
+set splitright
+
 set tabstop=4
 set softtabstop=4
 set expandtab
@@ -75,8 +76,6 @@ set expandtab
 set hlsearch
 set nocompatible
 
-" filetype off
-" filetype plugin indent on
 set autoindent
 
 set encoding=utf-8
@@ -89,10 +88,30 @@ set showcmd
 
 set laststatus=2
 
-" Key mapping
-nnoremap <F2> :NERDTreeToggle<CR> 
-nnoremap <F3> :GitGutterToggle<CR>
+" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
+" can be called correctly.
+" set shellslash
 
+" IMPORTANT: grep will sometimes skip displaying the file name if you
+" search in a singe file. This will confuse Latex-Suite. Set your grep
+" program to always generate a file-name.
+" set grepprg=grep\ -nH\ $*
+
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+" let g:tex_flavor='latex'
+" let g:Tex_ViewRule_pdf='AcroRd32'
+" let g:Tex_ViewRule_ps='gsview32'
+" let g:Tex_ViewRule_dvi='yap -1'
+" let g:Tex_DefaultTargetFormat='pdf'
+
+" Key mapping
+nnoremap <F2> :NERDTreeToggle<CR>
+nnoremap <F3> :GitGutterToggle<CR>
+nnoremap <F4> :SyntasticToggleMode<CR>
+
+" Vundle plugins
 set rtp+=~/.vim/bundle/Vundle.vim
 
 call vundle#begin()
@@ -107,6 +126,8 @@ Plugin 'tpope/vim-commentary' " Comment out lines easily
 Plugin 'vim-syntastic/syntastic'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'pangloss/vim-javascript'
+" Plugin 'Chiel92/vim-autoformat'
+" Plugin 'lervag/vimtex'
 
 call vundle#end()
 
@@ -118,8 +139,6 @@ let g:airline_theme='angr'
 
 "Airline settings
 let g:airline_powerline_fonts=1
-" let g:airline_right_sep = '<'
-" let g:airline_left_sep = '>'
 
 " Recommended Syntastic settings
 set statusline+=%#warningmsg#
